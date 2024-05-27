@@ -12,7 +12,8 @@ def run_extract_text_from_html_bytes(html_bytes: bytes) -> str | None:
 
 def run_identify_language(text: str) -> tuple[Any, float]:
     from cs336_data.utils import identify_language
-    return identify_language(text)
+    res = identify_language(text)
+    return (res[0].replace("__label__", ""), res[1])
 
 
 def run_mask_emails(text: str) -> tuple[str, int]:
