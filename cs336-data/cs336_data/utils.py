@@ -46,7 +46,7 @@ def classify_nsfw(text: str, model: str | None = None) -> tuple[str, float]:
         model = default_nsfw_model
     else:
         model = fasttext.load_model(model)
-    results = model.predict(text.replace("\n", " "), k=1)
+    results = model.predict(text.replace("\n", " ").encode(), k=1)
     results = [(l, v) for l, v in zip(*results)]
     return sorted(results, key=lambda x: x[1], reverse=True)[0]
 
@@ -56,6 +56,6 @@ def classify_toxic_speech(text: str, model: str | None = None) -> tuple[str, flo
         model = default_toxic_model
     else:
         model = fasttext.load_model(model)
-    results = model.predict(text.replace("\n", " "), k=1)
+    results = model.predict(text.replace("\n", " ").encode(), k=1)
     results = [(l, v) for l, v in zip(*results)]
     return sorted(results, key=lambda x: x[1], reverse=True)[0]
