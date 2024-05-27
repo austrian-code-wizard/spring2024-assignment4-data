@@ -4,6 +4,8 @@ import fasttext
 from resiliparse import parse
 from resiliparse.extract import html2text
 
+nltk.download('punkt')
+
 
 default_lang_model = fasttext.load_model("/home/shared/lid.176.bin")
 default_nsfw_model = fasttext.load_model("/home/shared/dolma-jigsaw-fasttext-bigrams-nsfw.bin")
