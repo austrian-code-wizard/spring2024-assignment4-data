@@ -18,5 +18,5 @@ def identify_language(text: str, model: str | None = None) -> tuple[str, float]:
     else:
         model = fasttext.load_model(model)
     results = model.predict(text)
-    results = [(l, v) for l, v in zip(*results)]
+    results = [(l.replace("__label__", ""), v) for l, v in zip(*results)]
     return sorted(results, key=lambda x: x[1], reverse=True)[0]
