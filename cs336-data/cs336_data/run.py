@@ -19,6 +19,7 @@ def main(
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--extract', action='store_true')
+    parser.add_argument('input_path')
     parser.add_argument('output_path')
     args = parser.parse_args()
-    main(args.extract, args.output_path)
+    main(args.extract, args.input_path, args.output_path)
