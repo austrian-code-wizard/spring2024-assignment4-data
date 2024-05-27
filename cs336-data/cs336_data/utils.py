@@ -4,7 +4,7 @@ from resiliparse import parse
 from resiliparse.extract import html2text
 
 
-#default_model = fasttext.load_model("/home/shared/lid.176.bin")
+default_model = fasttext.load_model("/home/shared/lid.176.bin")
 
 
 def extract_text(inp: bytes) -> str:
