@@ -32,11 +32,15 @@ def run_mask_ips(text: str) -> tuple[str, int]:
 
 
 def run_classify_nsfw(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    from cs336_data.utils import classify_nsfw
+    res = classify_nsfw(text)
+    return (res[0].replace("__label__", ""), res[1])
 
 
 def run_classify_toxic_speech(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    from cs336_data.utils import classify_toxic_speech
+    res = classify_toxic_speech(text)
+    return (res[0].replace("__label__", ""), res[1])
 
 
 def run_classify_quality(text: str) -> tuple[Any, float]:
