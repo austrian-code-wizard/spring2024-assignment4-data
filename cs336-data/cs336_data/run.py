@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('output_path')
     args = parser.parse_args()
 
-    if args.mask_pii and not args.extract:
+    if args.mask and not args.extract:
         raise ValueError("Cannot mask PII without extracting text")
 
     main(args.extract, args.identify, args.mask, args.classify, args.input_path, args.output_path)
