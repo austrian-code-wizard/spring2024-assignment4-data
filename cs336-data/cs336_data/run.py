@@ -5,7 +5,6 @@ from cs336_data.utils import extract_text, identify_language, mask_emails, mask_
 
 
 def main(
-        extract: bool,
         identify: bool,
         mask_pii: bool,
         classify: bool,
@@ -16,13 +15,12 @@ def main(
         for record in tqdm(ArchiveIterator(open(input_path, 'rb')), desc="Processing records"):
             output = str(record.http_headers)
             content = record.reader.read()
+            content = extract_text(content)
             if identify:
-                output += f"\nLanguage: {identify_language(extract_text(content))}\n"
+                output += f"\nLanguage: {identify_language(content)}\n"
             if classify:
                 output += f"\nNSFW: {classify_nsfw(content)}\n"
                 output += f"\nToxic: {classify_toxic_speech(content)}\n"
-            if extract:
-                content = extract_text(content)
             if mask_pii:
                 content, count1 = mask_emails(content)
                 content, count2 = mask_phone_numbers(content)
@@ -35,7 +33,6 @@ def main(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--extract', action='store_true')
     parser.add_argument('--identify', action='store_true')
     parser.add_argument('--mask', action='store_true')
     parser.add_argument('--classify', action='store_true')
@@ -46,4 +43,4 @@ if __name__ == '__main__':
     if args.mask and not args.extract:
         raise ValueError("Cannot mask PII without extracting text")
 
-    main(args.extract, args.identify, args.mask, args.classify, args.input_path, args.output_path)
+    main(args.identify, args.mask, args.classify, args.input_path, args.output_path)
