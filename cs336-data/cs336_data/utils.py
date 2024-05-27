@@ -4,5 +4,5 @@ from resiliparse.extract import html2text
 
 def extract_text(inp: bytes) -> str:
     encoding = parse.encoding.detect_encoding(inp)
-    decoded = inp.decode(encoding)
+    decoded = inp.decode(encoding, errors="replace")
     return html2text.extract_plain_text(decoded)
