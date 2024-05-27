@@ -1,4 +1,5 @@
 import re
+import nltk
 import fasttext
 from resiliparse import parse
 from resiliparse.extract import html2text
@@ -59,3 +60,27 @@ def classify_toxic_speech(text: str, model: str | None = None) -> tuple[str, flo
     results = model.predict(text.replace("\n", " "), k=1)
     results = [(l, v) for l, v in zip(*results)]
     return sorted(results, key=lambda x: x[1], reverse=True)[0]
+
+
+def gopher_filters(text: str) -> bool:
+    """Returns bool indicating whether to keep the document"""
+    words = nltk.word_tokenize(text)
+
+    # Filter out documents with less than 50 words or more than 100,000 words
+    if len(words) < 50 or len(words) > 100000:
+        return False
+    
+    # Filter out docs with mean word length outside of 3-10 char range
+    if not 3 <= sum(len(word) for word in words) / len(words) <= 10:
+        return False
+    
+    # Filter out docs with more than 30% of lines ending with "..."
+    lines = text.splitlines()
+    if sum(line.endswith("...") for line in lines) / len(lines) > 0.3:
+        return False
+    
+    # Filter out docs where less than 80% of words have an alphabetic character
+    if sum(any(c.isalpha() for c in word) for word in words) / len(words) < 0.8:
+        return False
+    
+    return True
