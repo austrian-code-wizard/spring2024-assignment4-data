@@ -20,9 +20,9 @@ def main(
             if extract:
                 content = extract_text(content)
             if mask_pii:
-                content = mask_emails(content)
-                content = mask_phone_numbers(content)
-                content = mask_ipv4(content)
+                content, _ = mask_emails(content)
+                content, _ = mask_phone_numbers(content)
+                content, _ = mask_ipv4(content)
             output += content
             f.write(output + "\n\n")
 
