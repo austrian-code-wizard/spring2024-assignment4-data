@@ -18,12 +18,20 @@ def main(
             content = record.reader.read()
             content = extract_text(content)
             if identify:
-                output += f"\nLanguage: {identify_language(content)}\n"
+                lang, conf = identify_language(content)
+                if lang != '__label__en' or conf < 0.65:
+                    continue
             if classify:
-                output += f"\nNSFW: {classify_nsfw(content)}\n"
-                output += f"\nToxic: {classify_toxic_speech(content)}\n"
+                nsf, conf = classify_nsfw(content)
+                if nsf != '__label__non-nsfw' or conf < 0.9:
+                    continue
+                toxic, conf = classify_toxic_speech(content)
+                if toxic != '__label__non-toxic' or conf < 0.9:
+                    continue
             if gopher:
-                output += f"\nGopher: {gopher_filters(content)}\n"
+                filter_gopher = gopher_filters(content)
+                if not filter_gopher:
+                    continue
             if mask_pii:
                 content, count1 = mask_emails(content)
                 content, count2 = mask_phone_numbers(content)
