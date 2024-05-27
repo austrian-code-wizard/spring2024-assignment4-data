@@ -1,5 +1,6 @@
 import re
 import nltk
+import mmh3
 import fasttext
 from resiliparse import parse
 from resiliparse.extract import html2text
@@ -86,3 +87,22 @@ def gopher_filters(text: str) -> bool:
         return False
     
     return True
+
+
+def deduplicate_lines(paths: list[str], output_dir: str):
+    line_counts = {}
+    for path in paths:
+        with open(path, "r") as f:
+            for line in f:
+                h = mmh3.hash(line)
+                if h not in line_counts:
+                    line_counts[h] = 0
+                line_counts[h] += 1
+    
+    for path in paths:
+        with open(path, "r") as f:
+            with open(f"{output_dir}/{path.split('/')[-1]}", "w") as out:
+                for line in f:
+                    h = mmh3.hash(line)
+                    if line_counts[h] <= 1:
+                        out.write(line)

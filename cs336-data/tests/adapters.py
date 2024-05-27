@@ -55,7 +55,8 @@ def run_gopher_quality_filter(text: str) -> bool:
 def run_exact_line_deduplication(
     input_files: list[os.PathLike], output_directory: os.PathLike
 ):
-    raise NotImplementedError
+    from cs336_data.utils import deduplicate_lines
+    deduplicate_lines(input_files, output_directory)
 
 
 def run_minhash_deduplication(
