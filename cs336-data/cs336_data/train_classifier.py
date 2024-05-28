@@ -11,7 +11,7 @@ from cs336_data.utils import extract_text, identify_language, mask_emails, class
 
 
 NUM_SAMPLES = 64000
-URL_PATH = "enwiki-20240420-extracted_urls.txt.gz"
+URL_PATH = "/home/shared/enwiki-20240420-extracted_urls.txt.gz"
 OUTPUT_PATH = "./data"
 
 
