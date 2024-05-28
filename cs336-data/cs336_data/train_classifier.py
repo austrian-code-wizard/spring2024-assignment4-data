@@ -7,7 +7,7 @@ random.seed(42)
 from tqdm import tqdm
 from fastwarc import ArchiveIterator
 
-#from cs336_data.utils import extract_text, identify_language, mask_emails, classify_nsfw, classify_toxic_speech, gopher_filters
+from cs336_data.utils import extract_text, identify_language, mask_emails, classify_nsfw, classify_toxic_speech, gopher_filters
 
 
 NUM_SAMPLES = 64000
@@ -15,7 +15,7 @@ URL_PATH = "enwiki-20240420-extracted_urls.txt.gz"
 OUTPUT_PATH = "./data"
 
 
-def sample_urls_sharded(num_samples: int, num_shards: int = 64) -> list[str]:
+def sample_urls_sharded(num_samples: int, num_shards: int = 16) -> list[str]:
     with gzip.open(URL_PATH, "rt") as f:
         urls = [l for l in tqdm(f.readlines())]
     urls = random.sample(urls, num_samples)
@@ -37,7 +37,7 @@ async def download_shard(shard_index: int) -> None:
         print(f"Error downloading shard {shard_index}: {stderr.decode()}")
 
 
-async def download_all_shards(num_shards: int = 64) -> None:
+async def download_all_shards(num_shards: int = 16) -> None:
     tasks = [download_shard(i) for i in range(num_shards)]
     await asyncio.gather(*tasks)
 
@@ -66,5 +66,5 @@ def filter_documents(warc_file_path: str) -> list[str]:
 
 if __name__ == "__main__":
     os.makedirs(OUTPUT_PATH, exist_ok=True)
-    #sample_urls_sharded(NUM_SAMPLES)
+    sample_urls_sharded(NUM_SAMPLES)
     asyncio.run(download_all_shards())
