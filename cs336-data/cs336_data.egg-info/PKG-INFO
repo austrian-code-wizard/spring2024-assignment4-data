@@ -1,0 +1,21 @@
+Metadata-Version: 2.1
+Name: cs336_data
+Version: 0.0.3
+Summary: CS336: data
+Description-Content-Type: text/markdown
+Requires-Dist: xopen
+Requires-Dist: resiliparse
+Requires-Dist: fasttext
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+
+# CS336 Spring 2024 Assignment 4: Data
+
+Please write your code for assignment 4 in this directory.
+
+To run unit tests (assuming you've followed the setup instructions in [the
+parent directory's README.md](../README.md)):
+
+``` sh
+pytest -v
+```

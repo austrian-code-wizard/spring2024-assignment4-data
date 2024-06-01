@@ -1,0 +1,6 @@
+xopen
+resiliparse
+fasttext
+
+[test]
+pytest

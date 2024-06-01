@@ -85,46 +85,39 @@ def filter_paloma_documents(paloma_path: str = "/home/shared/paloma_c4_100_domai
     return documents
 
 
-def filter_warc_file(file_path: str, num_samples: int, total_records: int) -> list[str]:
-    documents = []
-    for record in tqdm(ArchiveIterator(open(file_path, 'rb')), desc="Processing records"):
-        content = record.reader.read()
-        content = extract_text(content).replace("\n", " ")
-        if len(documents) >= num_samples:
-            return documents
-        if random.random() > num_samples / total_records:
-            continue
-        if not filter_content(content):
-            continue
-        documents.append(content)
-    return documents
+def filter_warc_file(file_path: str, num_samples: int, total_records: int, idx: int):
+    count = 0
+    with open(f"{OUTPUT_PATH}/train_neg_{idx}.txt", "w+") as f:
+        for record in tqdm(ArchiveIterator(open(file_path, 'rb')), desc="Processing records"):
+            content = record.reader.read()
+            content = extract_text(content).replace("\n", " ")
+            if count >= num_samples:
+                print(f"Found {count} negative samples for shard {idx}.")
+                return
+            if random.random() > num_samples / total_records:
+                continue
+            f.write(f"__label__negative {content}\n")
+            count += 1
+        print(f"Found {count} negative samples for shard {idx}.")
+        return
     
 def get_negative_samples(num_total: int, warc_folder_path: int = "/home/shared/CC-MAIN-2023-50-warc-filtered") -> list[str]:
     warc_files = [os.path.join(warc_folder_path, f) for f in os.listdir(warc_folder_path) if f.endswith(".warc.filtered.gz")]
     count_per_file = num_total // len(warc_files)
-    total_records = 30000
+    total_records = 3000
+    indices = list(range(len(warc_files)))
     with ProcessPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
-        results = list(executor.map(filter_warc_file, warc_files, [count_per_file] * len(warc_files), [total_records] * len(warc_files)))
-    # Flatten the list of lists into a single list of documents
-    documents = [doc for sublist in results for doc in sublist]
-    return documents
+        _ = list(executor.map(filter_warc_file, warc_files, [count_per_file] * len(warc_files), [total_records] * len(warc_files), indices))
 
 
-def create_training_data(split: float = 0.1) -> None:
-    positive_samples = filter_paloma_documents()
-    positive_samples = [f"__label__positive {doc}\n" for doc in positive_samples]
+def create_training_data() -> None:
+    with open(f"{OUTPUT_PATH}/train_pos.txt", "w+") as f:
+        positive_samples = filter_paloma_documents()
+        positive_samples = [f"__label__positive {doc}\n" for doc in positive_samples]
+        f.writelines(positive_samples)
     print(f"Found {len(positive_samples)} positive samples.")
-    negative_samples = get_negative_samples(len(positive_samples) * 3)
-    negative_samples = [f"__label__negative {doc}\n" for doc in negative_samples]
-    print(f"Found {len(negative_samples)} negative samples.")
-    samples = positive_samples + negative_samples
-    random.shuffle(samples)
-    split_index = int(len(samples) * split)
-    with open("train.txt", "w") as f:
-        f.writelines(samples[:split_index])
-    with open("val.txt", "w") as f:
-        f.writelines(samples[split_index:])
-    print(f"Training data written to train.txt and val.txt.")
+    get_negative_samples(len(positive_samples) * 3)
+    print(f"Training data written.")
 
 
 if __name__ == "__main__":
