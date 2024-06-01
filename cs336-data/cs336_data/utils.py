@@ -4,6 +4,7 @@ import re
 import nltk
 import mmh3
 import random
+import platform
 import fasttext
 import unicodedata
 from resiliparse import parse
@@ -12,9 +13,10 @@ from resiliparse.extract import html2text
 nltk.download('punkt')
 
 
-default_lang_model = fasttext.load_model("/home/shared/lid.176.bin")
-default_nsfw_model = fasttext.load_model("/home/shared/dolma-jigsaw-fasttext-bigrams-nsfw.bin")
-default_toxic_model = fasttext.load_model("/home/shared/dolma-jigsaw-fasttext-bigrams-hatespeech.bin")
+model_path_prefix = "/home/shared/" if platform.system() != "Darwin" else "./models/"
+default_lang_model = fasttext.load_model(model_path_prefix + "lid.176.bin")
+default_nsfw_model = fasttext.load_model(model_path_prefix + "dolma-jigsaw-fasttext-bigrams-nsfw.bin")
+default_toxic_model = fasttext.load_model(model_path_prefix + "dolma-jigsaw-fasttext-bigrams-hatespeech.bin")
 
 
 def extract_text(inp: bytes) -> str:
