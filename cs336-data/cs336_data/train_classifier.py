@@ -89,13 +89,13 @@ def filter_warc_file(file_path: str, num_samples: int, total_records: int, idx: 
     count = 0
     with open(f"{OUTPUT_PATH}/train_neg_{idx}.txt", "w+") as f:
         for record in tqdm(ArchiveIterator(open(file_path, 'rb')), desc="Processing records"):
-            content = record.reader.read()
-            content = extract_text(content).replace("\n", " ")
+            if random.random() > num_samples / total_records:
+                continue
             if count >= num_samples:
                 print(f"Found {count} negative samples for shard {idx}.")
                 return
-            if random.random() > num_samples / total_records:
-                continue
+            content = record.reader.read()
+            content = extract_text(content).replace("\n", " ")
             f.write(f"__label__negative {content}\n")
             count += 1
         print(f"Found {count} negative samples for shard {idx}.")
