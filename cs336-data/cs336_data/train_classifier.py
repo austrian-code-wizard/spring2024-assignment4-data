@@ -106,7 +106,7 @@ def get_negative_samples(num_total: int, warc_folder_path: int = "/home/shared/C
     count_per_file = num_total // len(warc_files)
     total_records = 3000
     indices = list(range(len(warc_files)))
-    with ProcessPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
+    with ProcessPoolExecutor(max_workers=8) as executor:
         _ = list(executor.map(filter_warc_file, warc_files, [count_per_file] * len(warc_files), [total_records] * len(warc_files), indices))
 
 
