@@ -17,6 +17,7 @@ model_path_prefix = "/home/shared/" if platform.system() != "Darwin" else "./mod
 default_lang_model = fasttext.load_model(model_path_prefix + "lid.176.bin")
 default_nsfw_model = fasttext.load_model(model_path_prefix + "dolma-jigsaw-fasttext-bigrams-nsfw.bin")
 default_toxic_model = fasttext.load_model(model_path_prefix + "dolma-jigsaw-fasttext-bigrams-hatespeech.bin")
+default_quality_model = fasttext.load_model("quality_model.ftz")
 
 
 def extract_text(inp: bytes) -> str:
@@ -28,6 +29,16 @@ def extract_text(inp: bytes) -> str:
 def identify_language(text: str, model: str | None = None) -> tuple[str, float]:
     if model is None:
         model = default_lang_model
+    else:
+        model = fasttext.load_model(model)
+    results = model.predict(text.replace("\n", " "), k=1)
+    results = [(l, v) for l, v in zip(*results)]
+    return sorted(results, key=lambda x: x[1], reverse=True)[0]
+
+
+def identify_quality(text: str, model: str | None = None) -> tuple[str, float]:
+    if model is None:
+        model = default_quality_model
     else:
         model = fasttext.load_model(model)
     results = model.predict(text.replace("\n", " "), k=1)

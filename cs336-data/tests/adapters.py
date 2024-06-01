@@ -44,7 +44,11 @@ def run_classify_toxic_speech(text: str) -> tuple[Any, float]:
 
 
 def run_classify_quality(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    from cs336_data.utils import identify_quality
+    res = identify_quality(text)
+    res = (res[0].replace("__label__", ""), res[1])
+    res = ("cc" if res[0] == "negative" else "wiki", res[1])
+    return res
 
 
 def run_gopher_quality_filter(text: str) -> bool:
