@@ -89,7 +89,7 @@ def filter_warc_file(file_path: str, num_samples: int, total_records: int, idx: 
     count = 0
     with open(f"{OUTPUT_PATH}/train_neg_{idx}.txt", "w+") as f:
         for record in tqdm(ArchiveIterator(open(file_path, 'rb')), desc="Processing records"):
-            if random.random() > num_samples / total_records:
+            if random.random() > 0.001:
                 continue
             if count >= num_samples:
                 print(f"Found {count} negative samples for shard {idx}.")
@@ -111,12 +111,14 @@ def get_negative_samples(num_total: int, warc_folder_path: int = "/home/shared/C
 
 
 def create_training_data() -> None:
-    with open(f"{OUTPUT_PATH}/train_pos.txt", "w+") as f:
+    """with open(f"{OUTPUT_PATH}/train_pos.txt", "w+") as f:
         positive_samples = filter_paloma_documents()
         positive_samples = [f"__label__positive {doc}\n" for doc in positive_samples]
-        f.writelines(positive_samples)
-    print(f"Found {len(positive_samples)} positive samples.")
-    get_negative_samples(len(positive_samples) * 3)
+        f.writelines(positive_samples)"""
+    #print(f"Found {len(positive_samples)} positive samples.")
+    num_pos = 12756
+    #get_negative_samples(len(positive_samples) * 3)
+    get_negative_samples(num_pos * 3)
     print(f"Training data written.")
 
 
